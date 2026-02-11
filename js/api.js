@@ -124,3 +124,30 @@ async function apiGetLogs(page = 1, limit = 20, action = null) {
     if (action) url += `&action=${action}`;
     return apiRequest(url);
 }
+
+// ===== Cliente: Depósito (PIX Simulado) =====
+async function apiCreateDeposit(amount) {
+    return apiRequest('/wallet/deposit', {
+        method: 'POST',
+        body: JSON.stringify({ amount: parseFloat(amount) }),
+    });
+}
+
+// ===== Cliente: Pedido de Recarga =====
+async function apiCreateOrder(destinationPhone, operator, amount) {
+    return apiRequest('/orders/', {
+        method: 'POST',
+        body: JSON.stringify({
+            destination_phone: destinationPhone,
+            operator: operator,
+            amount: parseFloat(amount),
+        }),
+    });
+}
+
+// ===== Cliente: Solicitar Revenda =====
+async function apiRequestReseller() {
+    return apiRequest('/users/request-reseller', {
+        method: 'POST',
+    });
+}

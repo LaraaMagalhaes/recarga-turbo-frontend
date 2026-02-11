@@ -53,12 +53,16 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        // Redirecionar se já logado como admin
+        // Redirecionar se já logado
         (function () {
             const user = getStoredUser();
             const token = localStorage.getItem('token');
-            if (token && user && user.role === 'admin') {
-                window.location.href = 'admin.html';
+            if (token && user) {
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
             }
         })();
 
@@ -88,17 +92,12 @@
                 const profile = await apiGetProfile();
                 storeUser(profile);
 
-                // Verificar role
-                if (profile.role !== 'admin') {
-                    alertText.textContent = 'Acesso restrito a administradores.';
-                    alertBox.classList.remove('hidden');
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    return;
+                // Redirecionar por role
+                if (profile.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'dashboard.html';
                 }
-
-                // Redirecionar para admin
-                window.location.href = 'admin.html';
 
             } catch (err) {
                 alertText.textContent = err.message || 'Credenciais inválidas. Tente novamente.';
