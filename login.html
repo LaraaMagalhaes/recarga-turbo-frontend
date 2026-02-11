@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga Turbo - Login</title>
+    <meta name="description" content="Acesse o painel administrativo do Recarga Turbo">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/pages/login.css">
+</head>
+
+<body class="login-page">
+
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo -->
+            <div class="login-logo">
+                <div class="logo-icon">⚡</div>
+                <h1>Recarga Turbo</h1>
+                <p>Painel Administrativo</p>
+            </div>
+
+            <!-- Alert -->
+            <div id="login-alert" class="login-alert error hidden">
+                <span id="login-alert-text"></span>
+            </div>
+
+            <!-- Form -->
+            <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" placeholder="••••••••" required
+                        autocomplete="current-password">
+                </div>
+
+                <button type="submit" id="login-btn" class="login-btn">
+                    <span id="login-btn-text">Entrar</span>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>Sistema de recargas eletrônicas</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Redirecionar se já logado como admin
+        (function () {
+            const user = getStoredUser();
+            const token = localStorage.getItem('token');
+            if (token && user && user.role === 'admin') {
+                window.location.href = 'admin.html';
+            }
+        })();
+
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('login-btn');
+            const btnText = document.getElementById('login-btn-text');
+            const alertBox = document.getElementById('login-alert');
+            const alertText = document.getElementById('login-alert-text');
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Loading state
+            btn.disabled = true;
+            btnText.innerHTML = '<div class="spinner"></div> Entrando...';
+            alertBox.classList.add('hidden');
+
+            try {
+                const data = await apiLogin(email, password);
+
+                // Salvar token e dados
+                storeToken(data.access_token);
+
+                // Buscar perfil completo
+                const profile = await apiGetProfile();
+                storeUser(profile);
+
+                // Verificar role
+                if (profile.role !== 'admin') {
+                    alertText.textContent = 'Acesso restrito a administradores.';
+                    alertBox.classList.remove('hidden');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    return;
+                }
+
+                // Redirecionar para admin
+                window.location.href = 'admin.html';
+
+            } catch (err) {
+                alertText.textContent = err.message || 'Credenciais inválidas. Tente novamente.';
+                alertBox.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Entrar';
+            }
+        }
+    </script>
+</body>
+
+</html>

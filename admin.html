@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga Turbo - Admin Dashboard</title>
+    <meta name="description" content="Painel administrativo do sistema Recarga Turbo">
+    <link rel="stylesheet" href="css/global.css?v=2">
+    <link rel="stylesheet" href="css/components.css?v=2">
+    <link rel="stylesheet" href="css/pages/admin.css?v=2">
+</head>
+
+<body>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">⚡</div>
+            <div>
+                <div class="logo-text">Recarga Turbo</div>
+                <div class="logo-sub">Administração</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Menu</div>
+            <div class="nav-item active" data-section="overview" onclick="navigateTo('overview')">
+                <span class="nav-icon">📊</span>
+                <span>Visão Geral</span>
+            </div>
+            <div class="nav-item" data-section="orders" onclick="navigateTo('orders')">
+                <span class="nav-icon">📦</span>
+                <span>Pedidos</span>
+            </div>
+            <div class="nav-item" data-section="users" onclick="navigateTo('users')">
+                <span class="nav-icon">👥</span>
+                <span>Usuários</span>
+            </div>
+            <div class="nav-item" data-section="resellers" onclick="navigateTo('resellers')">
+                <span class="nav-icon">🏪</span>
+                <span>Parceiros</span>
+            </div>
+            <div class="nav-item" data-section="logs" onclick="navigateTo('logs')">
+                <span class="nav-icon">📋</span>
+                <span>Logs</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar" id="sidebar-user-avatar">?</div>
+                <div>
+                    <div class="user-name" id="sidebar-user-name">Carregando...</div>
+                    <div class="user-role">Administrador</div>
+                </div>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="width:100%; margin-top: 8px;" onclick="logout()">
+                🚪 Sair
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+                <div id="topbar-title" class="page-title">Visão Geral</div>
+                <div id="topbar-subtitle" class="page-subtitle">Resumo do sistema</div>
+            </div>
+            <div class="topbar-actions">
+                <span class="badge badge-admin">ADMIN</span>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <!-- =============================== -->
+            <!-- SECTION: Visão Geral            -->
+            <!-- =============================== -->
+            <div id="section-overview" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card purple animate-fade-in">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="stat-total-users">—</div>
+                        <div class="stat-label">Total de Usuários</div>
+                    </div>
+                    <div class="stat-card green animate-fade-in" style="animation-delay: 0.05s">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="stat-active-users">—</div>
+                        <div class="stat-label">Contas Ativas</div>
+                    </div>
+                    <div class="stat-card blue animate-fade-in" style="animation-delay: 0.1s">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-value" id="stat-pending-orders">—</div>
+                        <div class="stat-label">Pedidos Pendentes</div>
+                    </div>
+                    <div class="stat-card orange animate-fade-in" style="animation-delay: 0.15s">
+                        <div class="stat-icon">🏪</div>
+                        <div class="stat-value" id="stat-reseller-requests">—</div>
+                        <div class="stat-label">Solicitações Revenda</div>
+                    </div>
+                </div>
+
+                <!-- Últimos Pedidos -->
+                <div class="card animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="card-header">
+                        <h3>📦 Últimos Pedidos</h3>
+                        <button class="btn btn-ghost btn-sm" onclick="navigateTo('orders')">Ver todos →</button>
+                    </div>
+                    <div class="card-body" id="overview-recent-orders">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <span>Carregando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
+            <!-- SECTION: Pedidos de Recarga     -->
+            <!-- =============================== -->
+            <div id="section-orders" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📦 Pedidos de Recarga</h3>
+                        <span class="text-sm text-muted" id="orders-count-label"></span>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="filters-bar">
+                        <select id="orders-status-filter" class="filter-select"
+                            onchange="onOrderStatusFilterChange(this.value)">
+                            <option value="">Todos os status</option>
+                            <option value="pending">⏳ Pendente</option>
+                            <option value="paid">💳 Pago</option>
+                            <option value="completed">✅ Concluído</option>
+                            <option value="canceled">❌ Cancelado</option>
+                            <option value="failed">⚠️ Falhou</option>
+                        </select>
+                    </div>
+
+                    <div id="orders-loading" class="loading-state">
+                        <div class="spinner spinner-lg"></div>
+                        <span>Carregando pedidos...</span>
+                    </div>
+
+                    <div id="orders-table-wrapper" class="hidden">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Operadora</th>
+                                        <th>Tel. Destino</th>
+                                        <th>Valor</th>
+                                        <th>Status</th>
+                                        <th>Data/Hora</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="orders-empty" class="empty-state hidden">
+                            <div class="empty-icon">📦</div>
+                            <h4>Nenhum pedido</h4>
+                            <p>Não há pedidos com este filtro</p>
+                        </div>
+                        <div id="orders-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
+            <!-- SECTION: Usuários               -->
+            <!-- =============================== -->
+            <div id="section-users" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>👥 Todos os Usuários</h3>
+                        <span class="text-sm text-muted" id="users-count-label"></span>
+                    </div>
+
+                    <div class="search-bar">
+                        <div class="search-input-wrapper">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="users-search" class="search-input"
+                                placeholder="Buscar por nome ou e-mail..." oninput="filterUsers(this.value)"
+                                autocomplete="off">
+                            <button id="search-clear-btn" class="search-clear hidden" onclick="clearSearch()">✕</button>
+                        </div>
+                    </div>
+
+                    <div id="users-loading" class="loading-state">
+                        <div class="spinner spinner-lg"></div>
+                        <span>Carregando usuários...</span>
+                    </div>
+
+                    <div id="users-table-wrapper" class="hidden">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Usuário</th>
+                                        <th>Tipo</th>
+                                        <th>Saldo</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="users-no-results" class="empty-state hidden">
+                            <div class="empty-icon">🔍</div>
+                            <h4>Nenhum resultado</h4>
+                            <p>Nenhum usuário encontrado com esse termo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
+            <!-- SECTION: Parceiros (Revenda)    -->
+            <!-- =============================== -->
+            <div id="section-resellers" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🏪 Solicitações de Revenda</h3>
+                        <span class="text-sm text-muted" id="resellers-count-label"></span>
+                    </div>
+
+                    <div id="resellers-loading" class="loading-state">
+                        <div class="spinner spinner-lg"></div>
+                        <span>Carregando solicitações...</span>
+                    </div>
+
+                    <div id="resellers-content" class="hidden">
+                        <div id="resellers-empty" class="empty-state hidden">
+                            <div class="empty-icon">🎉</div>
+                            <h4>Nenhuma solicitação pendente</h4>
+                            <p>Todas as solicitações foram processadas</p>
+                        </div>
+
+                        <div id="resellers-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
+            <!-- SECTION: Logs                   -->
+            <!-- =============================== -->
+            <div id="section-logs" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📋 Logs de Auditoria</h3>
+                        <span class="text-sm text-muted" id="logs-count-label"></span>
+                    </div>
+
+                    <div class="filters-bar">
+                        <select id="logs-action-filter" class="filter-select"
+                            onchange="onLogActionFilterChange(this.value)">
+                            <option value="">Todas as ações</option>
+                            <option value="deposit_pix">💳 Depósito PIX</option>
+                            <option value="order_create">📦 Pedido criado</option>
+                            <option value="order_confirm">✅ Recarga confirmada</option>
+                            <option value="order_refund">↩️ Saldo devolvido</option>
+                            <option value="balance_adjust">💰 Ajuste de saldo</option>
+                            <option value="reseller_approve">🏪 Revenda aprovada</option>
+                            <option value="reseller_reject">❌ Revenda rejeitada</option>
+                        </select>
+                    </div>
+
+                    <div id="logs-loading" class="loading-state">
+                        <div class="spinner spinner-lg"></div>
+                        <span>Carregando logs...</span>
+                    </div>
+
+                    <div id="logs-table-wrapper" class="hidden">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Ação</th>
+                                        <th>Executado por</th>
+                                        <th>Usuário</th>
+                                        <th>Valor</th>
+                                        <th>Descrição</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logs-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="logs-empty" class="empty-state hidden">
+                            <div class="empty-icon">📋</div>
+                            <h4>Nenhum log</h4>
+                            <p>Nenhuma atividade registrada ainda</p>
+                        </div>
+                        <div id="logs-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Transações do Usuário ===== -->
+    <div id="user-tx-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📊 Transações de <span id="modal-user-name">—</span></h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-detail-stats">
+                    <div class="user-detail-stat">
+                        <div class="detail-value" id="modal-tx-total">—</div>
+                        <div class="detail-label">Total Transações</div>
+                    </div>
+                </div>
+                <div class="filters-bar mb-md">
+                    <select id="modal-tx-filter" class="filter-select" onchange="onModalFilterChange(this.value)">
+                        <option value="">Todos os tipos</option>
+                        <option value="credit">↑ Entradas</option>
+                        <option value="debit">↓ Saídas</option>
+                    </select>
+                </div>
+                <div id="modal-tx-content">
+                    <div class="loading-state">
+                        <div class="spinner spinner-lg"></div><span>Carregando...</span>
+                    </div>
+                </div>
+                <div id="modal-pagination"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Ajuste de Saldo ===== -->
+    <div id="adjust-balance-modal" class="modal-overlay hidden">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>💰 Ajustar Saldo</h3>
+                <button class="modal-close" onclick="closeAdjustModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-md">Usuário: <strong id="adjust-user-name">—</strong></p>
+
+                <div class="form-group">
+                    <label for="adjust-amount">Valor (R$)</label>
+                    <input type="number" id="adjust-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="adjust-type">Tipo</label>
+                    <select id="adjust-type" class="form-input">
+                        <option value="credit">↑ Crédito (adicionar)</option>
+                        <option value="debit">↓ Débito (remover)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="adjust-reason">Motivo (obrigatório)</label>
+                    <input type="text" id="adjust-reason" class="form-input"
+                        placeholder="Ex: Correção de saldo, bonificação..." minlength="5" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeAdjustModal()">Cancelar</button>
+                <button class="btn btn-primary" id="adjust-submit-btn" onclick="submitAdjustBalance()">Confirmar
+                    Ajuste</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Confirmação ===== -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3 id="confirm-modal-title">Confirmar Ação</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeConfirmModal()">Cancelar</button>
+                <button class="btn btn-primary" id="confirm-modal-btn" onclick="">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts (v2 = cache bust) -->
+    <script src="js/api.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/pages/admin.js?v=2"></script>
+</body>
+
+</html>

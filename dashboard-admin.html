@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga Turbo - Dashboard Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .badge.admin {
+            background: #f59e0b;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #f9fafb;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .role-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .role-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-cliente {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-revendedor {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #fcc;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>🔐 Dashboard Administrativo</h1>
+            <div class="user-info">
+                <span id="adminName"></span>
+                <span class="badge admin">ADMIN</span>
+                <button class="logout-btn" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <h3 id="totalUsers">-</h3>
+                <p>Total de Usuários</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="activeUsers">-</h3>
+                <p>Usuários Ativos</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="adminCount">-</h3>
+                <p>Administradores</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>👥 Gerenciamento de Usuários</h2>
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            <div id="loading" class="loading">Carregando usuários...</div>
+            <div class="table-container" id="usersTable" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>ℹ️ Sobre o RBAC</h2>
+            <p style="color: #666; line-height: 1.6;">
+                Esta página demonstra o <strong>RBAC (Role-Based Access Control)</strong> implementado no backend.
+                Apenas usuários com role "admin" conseguem acessar esta rota e ver a lista de todos os usuários.
+                <br><br>
+                <strong>O que está sendo testado:</strong>
+            </p>
+            <ul style="margin-top: 10px; color: #666; line-height: 1.8;">
+                <li>✅ Validação de token JWT</li>
+                <li>✅ Verificação de role (admin/cliente/revendedor)</li>
+                <li>✅ Proteção de rota com <code>RoleChecker</code></li>
+                <li>✅ Listagem de usuários via API</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+
+        // Verificar autenticação
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Acesso negado! Faça login.');
+            window.location.href = 'login.html';
+        }
+
+        // Buscar dados atualizados do admin via API
+        async function loadAdminProfile() {
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    alert('Sessão expirada ou acesso não autorizado.');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                    return null;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar perfil');
+                }
+
+                const userData = await response.json();
+
+                // Verificar se é realmente admin
+                if (userData.role !== 'admin') {
+                    alert('Acesso negado! Apenas administradores podem acessar esta página.');
+                    window.location.href = 'dashboard.html';
+                    return null;
+                }
+
+                // Atualizar localStorage
+                localStorage.setItem('user', JSON.stringify(userData));
+
+                // Preencher nome no header
+                document.getElementById('adminName').textContent = userData.name;
+
+                return userData;
+
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                alert('Erro ao carregar dados do perfil.');
+                return null;
+            }
+        }
+
+        async function loadUsers() {
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const usersTable = document.getElementById('usersTable');
+            const usersTableBody = document.getElementById('usersTableBody');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Erro ao carregar usuários');
+                }
+
+                const users = await response.json();
+
+                // Calcular estatísticas
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('activeUsers').textContent = users.filter(u => u.is_active).length;
+                document.getElementById('adminCount').textContent = users.filter(u => u.role === 'admin').length;
+
+                // Preencher tabela
+                usersTableBody.innerHTML = '';
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+
+                    const roleClass = `role-${user.role}`;
+                    const statusClass = user.is_active ? 'status-active' : 'status-inactive';
+                    const statusText = user.is_active ? 'Ativa' : 'Inativa';
+
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td><span class="role-badge ${roleClass}">${user.role}</span></td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    `;
+                    usersTableBody.appendChild(row);
+                });
+
+                loading.style.display = 'none';
+                usersTable.style.display = 'block';
+
+            } catch (error) {
+                loading.style.display = 'none';
+                errorMessage.textContent = `Erro: ${error.message}`;
+                errorMessage.style.display = 'block';
+                console.error('Erro ao carregar usuários:', error);
+            }
+        }
+
+        function logout() {
+            if (confirm('Deseja sair?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Carregar perfil do admin e depois lista de usuários
+        (async () => {
+            const adminData = await loadAdminProfile();
+            if (adminData) {
+                await loadUsers();
+            }
+        })();
+    </script>
+</body>
+
+</html>
