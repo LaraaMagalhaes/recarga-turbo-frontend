@@ -50,8 +50,13 @@ function storeToken(token) {
     localStorage.setItem('token', token);
 }
 
-/** Logout: limpa storage e redireciona */
-function logout() {
+/** Logout: limpa refresh cookie (via API), storage e redireciona */
+async function logout() {
+    try {
+        await apiLogout();
+    } catch {
+        // Ignora erros — cookie pode já ter expirado
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = 'login.html';
@@ -125,7 +130,9 @@ function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.id = 'app-toast';
     toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<span>${message}</span>`;
+    const span = document.createElement('span');
+    span.textContent = message;
+    toast.appendChild(span);
     document.body.appendChild(toast);
 
     setTimeout(() => {

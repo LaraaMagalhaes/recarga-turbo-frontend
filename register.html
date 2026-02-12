@@ -188,8 +188,8 @@
 
             <div class="form-group">
                 <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="••••••••" required minlength="6">
-                <div class="help-text">Mínimo 6 caracteres</div>
+                <input type="password" id="password" placeholder="••••••••" required minlength="8">
+                <div class="help-text">Mínimo 8 caracteres, 1 maiúscula e 1 número</div>
             </div>
 
             <button type="submit">CRIAR CONTA</button>
@@ -202,89 +202,7 @@
         </div>
     </div>
 
-    <script>
-        const API_URL = 'http://localhost:8000';
-
-        function showAlert(message, type = 'error') {
-            const alert = document.getElementById('alert');
-            alert.textContent = message;
-            alert.className = `alert alert-${type}`;
-            alert.style.display = 'block';
-
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 5000);
-        }
-
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            const loading = document.getElementById('loading');
-            const submitBtn = e.target.querySelector('button');
-
-            const payload = {
-                name: name,
-                email: email,
-                password: password
-            };
-
-            // Só adicionar phone se tiver valor
-            if (phone.trim()) {
-                payload.phone = phone;
-            }
-
-            try {
-                submitBtn.disabled = true;
-                loading.style.display = 'block';
-
-                const response = await fetch(`${API_URL}/users/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Salvar token e dados do usuário
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data));
-
-                    showAlert('Conta criada com sucesso! Redirecionando...', 'success');
-
-                    // Redirecionar para dashboard
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    // Mostrar erro específico
-                    if (data.detail) {
-                        if (typeof data.detail === 'string') {
-                            showAlert(data.detail);
-                        } else if (Array.isArray(data.detail)) {
-                            // Pydantic validation errors
-                            const errorMsg = data.detail.map(err => err.msg).join(', ');
-                            showAlert(errorMsg);
-                        }
-                    } else {
-                        showAlert('Erro ao criar conta');
-                    }
-                }
-            } catch (error) {
-                showAlert('Erro ao conectar com o servidor. Backend está rodando?');
-                console.error('Erro:', error);
-            } finally {
-                submitBtn.disabled = false;
-                loading.style.display = 'none';
-            }
-        });
-    </script>
+    <script src="js/pages/register-page.js"></script>
 </body>
 
 </html>

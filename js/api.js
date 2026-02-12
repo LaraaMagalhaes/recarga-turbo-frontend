@@ -4,15 +4,52 @@
  * Centraliza todas as chamadas HTTP com:
  * - Auto-inject do token JWT
  * - Tratamento de erros padronizado
- * - Redirect em 401 (sessão expirada)
+ * - Auto-refresh silencioso quando access token expira (401)
+ * - Redirect em 401 somente se refresh também falhar
  */
 
 const API_BASE = 'http://localhost:8000';
+
+// Flag para evitar múltiplos refreshes simultâneos
+let _isRefreshing = false;
+let _refreshPromise = null;
+
+/**
+ * Tenta renovar o access token usando o refresh token cookie.
+ * Retorna o novo token ou null se falhar.
+ */
+async function _tryRefreshToken() {
+    if (_isRefreshing) return _refreshPromise;
+
+    _isRefreshing = true;
+    _refreshPromise = (async () => {
+        try {
+            const res = await fetch(`${API_BASE}/users/refresh`, {
+                method: 'POST',
+                credentials: 'include', // Envia o cookie refresh_token
+            });
+            if (res.ok) {
+                const data = await res.json();
+                storeToken(data.access_token);
+                return data.access_token;
+            }
+            return null;
+        } catch {
+            return null;
+        } finally {
+            _isRefreshing = false;
+            _refreshPromise = null;
+        }
+    })();
+
+    return _refreshPromise;
+}
 
 async function apiRequest(endpoint, options = {}) {
     const token = localStorage.getItem('token');
 
     const config = {
+        credentials: 'include', // Sempre enviar cookies (refresh_token)
         headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` }),
@@ -24,6 +61,32 @@ async function apiRequest(endpoint, options = {}) {
     const response = await fetch(`${API_BASE}${endpoint}`, config);
 
     if (response.status === 401) {
+        // Tentar auto-refresh silencioso antes de redirecionar
+        const newToken = await _tryRefreshToken();
+        if (newToken) {
+            // Retry a requisição original com o novo token
+            config.headers['Authorization'] = `Bearer ${newToken}`;
+            const retryResponse = await fetch(`${API_BASE}${endpoint}`, config);
+
+            if (retryResponse.ok) {
+                return retryResponse.json();
+            }
+
+            // Se ainda falhou, tratar como erro normal
+            if (retryResponse.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+                throw new Error('Sessão expirada');
+            }
+
+            if (!retryResponse.ok) {
+                const data = await retryResponse.json().catch(() => ({}));
+                throw new Error(data.detail || `Erro ${retryResponse.status}`);
+            }
+        }
+
+        // Refresh falhou — sessão expirou de verdade
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = 'login.html';
@@ -58,6 +121,14 @@ async function apiLogin(email, password) {
 
 async function apiGetProfile() {
     return apiRequest('/users/me');
+}
+
+async function apiLogout() {
+    try {
+        await apiRequest('/users/logout', { method: 'POST' });
+    } catch {
+        // Ignora erros no logout (pode já ter expirado)
+    }
 }
 
 // ===== Wallet =====

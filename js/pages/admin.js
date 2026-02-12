@@ -631,7 +631,7 @@ async function loadUserTransactionsModal() {
 
         renderPagination('modal-pagination', data.page, data.pages, data.total, modalGoToPage);
     } catch (err) {
-        container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h4>Erro</h4><p>${err.message}</p></div>`;
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h4>Erro</h4><p>${escapeHtml(err.message)}</p></div>`;
     }
 }
 
