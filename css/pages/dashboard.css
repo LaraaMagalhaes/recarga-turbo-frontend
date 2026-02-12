@@ -3,6 +3,31 @@
    Recarga Turbo — Matching reference design
    ============================================================ */
 
+/* ===== SVG ICON SIZING (universal) ===== */
+.nav-svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.bnav-svg {
+    width: 22px;
+    height: 22px;
+}
+
+.inline-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: -2px;
+    display: inline;
+    flex-shrink: 0;
+}
+
+.op-icon {
+    width: 32px;
+    height: 32px;
+}
+
 /* ===== SIDEBAR USER INFO ===== */
 .sidebar-user-info {
     display: flex;
@@ -74,32 +99,14 @@
     color: #48bb78 !important;
 }
 
-.nav-item-highlight .nav-icon {
-    color: #48bb78;
+.nav-item-highlight .nav-svg {
+    stroke: #48bb78;
 }
 
 /* ===== SIDEBAR FOOTER ===== */
 .sidebar-footer {
     border-top: 1px solid var(--border-light);
     padding: 12px 16px;
-}
-
-.sidebar-footer-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.sidebar-tema {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.sidebar-icon-btn {
-    font-size: 1rem;
-    cursor: pointer;
-    opacity: 0.6;
 }
 
 .sidebar-logout-btn {
@@ -120,6 +127,11 @@
 
 .sidebar-logout-btn:hover {
     background: rgba(229, 62, 62, 0.2);
+}
+
+.sidebar-logout-btn svg {
+    stroke: #fc8181;
+    flex-shrink: 0;
 }
 
 /* ===== TOPBAR BALANCE ===== */
@@ -150,22 +162,6 @@
     color: var(--color-primary);
 }
 
-/* ===== SIDEBAR BACKDROP ===== */
-.sidebar-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 998;
-    backdrop-filter: blur(2px);
-}
-
-.sidebar-backdrop.show {
-    display: block;
-}
 
 /* ===== RECHARGE CARD (Main Home) ===== */
 .recharge-card-main {
@@ -246,11 +242,15 @@
     font-weight: 400;
 }
 
-/* Operator Grid */
+/* Operator Grid — 3 columns for 3 operators */
 .operator-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
+}
+
+.operator-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .operator-btn {
@@ -283,8 +283,14 @@
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
-.operator-icon {
-    font-size: 1.8rem;
+.operator-btn .op-icon {
+    stroke: var(--text-secondary);
+    transition: stroke var(--transition-fast);
+}
+
+.operator-btn:hover .op-icon,
+.operator-btn.selected .op-icon {
+    stroke: var(--color-primary);
 }
 
 /* Recharge Amounts */
@@ -357,6 +363,12 @@
     color: var(--text-secondary);
 }
 
+.summary-row>span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .summary-row:not(:last-child) {
     border-bottom: 1px solid var(--border-light);
 }
@@ -387,6 +399,14 @@
     transition: all var(--transition-fast);
     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
     letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-recharge-submit .inline-icon {
+    stroke: white;
 }
 
 .btn-recharge-submit:hover:not(:disabled) {
@@ -468,9 +488,18 @@
     border: none;
 }
 
+.btn-hero .inline-icon {
+    width: 16px;
+    height: 16px;
+}
+
 .btn-hero.btn-white {
     background: white;
     color: var(--color-primary);
+}
+
+.btn-hero.btn-white .inline-icon {
+    stroke: var(--color-primary);
 }
 
 .btn-hero.btn-white:hover {
@@ -483,6 +512,10 @@
     background: rgba(255, 255, 255, 0.15);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-hero.btn-outline .inline-icon {
+    stroke: white;
 }
 
 .btn-hero.btn-outline:hover {
@@ -685,7 +718,83 @@
     cursor: not-allowed;
 }
 
-/* ===== PROFILE PAGE (Matching reference) ===== */
+/* ===== EDIT PROFILE MODAL ===== */
+.edit-profile-modal {
+    max-width: 500px;
+}
+
+.edit-form-group {
+    margin-bottom: 20px;
+}
+
+.edit-form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.edit-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-cancel-edit {
+    padding: 12px 24px;
+    background: none;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-cancel-edit:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-save-edit {
+    padding: 12px 24px;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-save-edit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-save-edit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ===== PROFILE PAGE ===== */
 .profile-header-card {
     border-radius: var(--radius-xl);
     overflow: hidden;
@@ -714,12 +823,17 @@
     position: relative;
 }
 
+/* Green online dot (pure CSS, no emoji) */
 .profile-avatar-lg::after {
-    content: '🟢';
+    content: '';
     position: absolute;
-    bottom: -2px;
-    right: -2px;
-    font-size: 0.75rem;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    background: #48bb78;
+    border: 2.5px solid var(--bg-card);
+    border-radius: 50%;
 }
 
 .profile-header-info h3 {
@@ -754,14 +868,20 @@
     right: 0;
     background: none;
     border: none;
-    font-size: 1rem;
     cursor: pointer;
     opacity: 0.5;
     transition: opacity var(--transition-fast);
+    padding: 4px;
+    line-height: 1;
+    color: var(--text-secondary);
 }
 
 .profile-edit-btn:hover {
     opacity: 1;
+}
+
+.profile-edit-btn svg {
+    stroke: var(--text-secondary);
 }
 
 /* Balance mini inside profile */
@@ -776,7 +896,13 @@
 }
 
 .profile-balance-icon {
-    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-balance-icon svg {
+    stroke: var(--text-secondary);
 }
 
 .profile-balance-label {
@@ -798,51 +924,32 @@
     border-radius: var(--radius-xl);
 }
 
-/* Integration row */
-.integration-row {
+/* Profile data grid */
+.profile-data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.profile-data-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.integration-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.integration-icon {
-    font-size: 1.4rem;
-}
-
-.integration-info strong {
-    display: block;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-}
-
-.integration-desc {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.btn-connect {
-    padding: 8px 18px;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 0.8rem;
+.profile-data-label {
+    font-size: 0.7rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.btn-connect:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+.profile-data-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-word;
 }
 
 /* Quick links */
@@ -871,8 +978,14 @@
 }
 
 .quick-link-icon {
-    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+}
+
+.quick-link-icon svg {
+    stroke: var(--text-secondary);
 }
 
 .quick-link-text {
@@ -910,6 +1023,10 @@
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.security-info svg {
+    stroke: var(--text-secondary);
 }
 
 .security-info strong {
@@ -1037,13 +1154,17 @@
     color: var(--color-primary);
 }
 
-.bottom-nav-item:active {
-    opacity: 0.7;
+.bottom-nav-item.active .bnav-svg {
+    stroke: var(--color-primary);
 }
 
-.bnav-icon {
-    font-size: 1.3rem;
-    line-height: 1;
+.bottom-nav-item .bnav-svg {
+    stroke: var(--text-muted);
+    transition: stroke var(--transition-fast);
+}
+
+.bottom-nav-item:active {
+    opacity: 0.7;
 }
 
 .bnav-label {
@@ -1061,8 +1182,6 @@
     border-radius: var(--radius-full);
     background: #48bb78;
     color: white;
-    font-size: 1.5rem;
-    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1070,6 +1189,10 @@
     top: -14px;
     box-shadow: 0 4px 14px rgba(72, 187, 120, 0.4);
     transition: transform var(--transition-fast);
+}
+
+.bnav-icon-main svg {
+    stroke: white;
 }
 
 .bnav-deposit:active .bnav-icon-main {
@@ -1098,18 +1221,13 @@
 /* ===== MOBILE (≤768px) ===== */
 @media (max-width: 768px) {
 
-    /* Show bottom nav, hide sidebar */
+    /* Show bottom nav, hide sidebar completely */
     .bottom-nav {
         display: flex;
     }
 
     .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-        box-shadow: var(--shadow-xl);
+        display: none !important;
     }
 
     .main-content {
@@ -1134,7 +1252,7 @@
         gap: 8px;
     }
 
-    #topbar-user-name {
+    .topbar-user-name {
         display: none;
     }
 
@@ -1153,8 +1271,9 @@
         padding: 14px 16px;
     }
 
-    .operator-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .operator-grid,
+    .operator-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
         gap: 8px;
     }
 
@@ -1163,8 +1282,9 @@
         font-size: 0.78rem;
     }
 
-    .operator-icon {
-        font-size: 1.4rem;
+    .op-icon {
+        width: 26px;
+        height: 26px;
     }
 
     .recharge-amounts {
@@ -1207,32 +1327,53 @@
         grid-template-columns: 1fr;
     }
 
+    .profile-data-grid {
+        grid-template-columns: 1fr;
+    }
+
     /* Reseller CTA */
     .reseller-cta {
         padding: 24px 16px;
     }
 
-    /* Modal fullscreen on mobile */
+    /* ====== MODAL: centered on mobile, not bottom-aligned ====== */
     .modal-overlay {
-        align-items: flex-end;
+        align-items: center !important;
+        padding: 16px;
     }
 
-    .deposit-modal {
+    .deposit-modal,
+    .edit-profile-modal {
         max-width: 100%;
-        max-height: 92vh;
+        max-height: 85vh;
         margin: 0;
-        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-        animation: slideUp 0.3s ease;
+        border-radius: var(--radius-xl);
+        overflow-y: auto;
+        animation: fadeScale 0.25s ease;
     }
 
-    @keyframes slideUp {
+    @keyframes fadeScale {
         from {
-            transform: translateY(100%);
+            opacity: 0;
+            transform: scale(0.95);
         }
 
         to {
-            transform: translateY(0);
+            opacity: 1;
+            transform: scale(1);
         }
+    }
+
+    .deposit-modal .modal-body {
+        padding: 20px;
+    }
+
+    .deposit-amount-field {
+        font-size: 2rem;
+    }
+
+    .deposit-footer {
+        padding: 12px 20px 16px;
     }
 
     /* Transaction items */
@@ -1280,8 +1421,9 @@
         padding: 12px 14px;
     }
 
-    .operator-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .operator-grid,
+    .operator-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .recharge-amounts {
@@ -1297,7 +1439,7 @@
     }
 
     .deposit-amount-field {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
     .profile-header {
@@ -1320,7 +1462,9 @@
     }
 
     .btn-recharge-submit,
-    .btn-gerar-pix {
+    .btn-gerar-pix,
+    .btn-save-edit,
+    .btn-cancel-edit {
         min-height: 52px;
     }
 

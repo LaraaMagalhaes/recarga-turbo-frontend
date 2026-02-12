@@ -106,7 +106,7 @@ function renderOverviewOrders(data) {
     if (!data || !data.orders || data.orders.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">📦</div>
+                <div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
                 <h4>Sem pedidos</h4>
                 <p>Nenhum pedido de recarga registrado</p>
             </div>`;
@@ -133,11 +133,11 @@ function renderOverviewOrders(data) {
 
 function renderOrderStatusBadge(status) {
     const map = {
-        pending: { cls: 'badge-pending', label: '⏳ Pendente' },
-        paid: { cls: 'badge-paid', label: '💳 Pago' },
-        completed: { cls: 'badge-completed', label: '✅ Concluído' },
-        canceled: { cls: 'badge-canceled', label: '❌ Cancelado' },
-        failed: { cls: 'badge-failed', label: '⚠️ Falhou' },
+        pending: { cls: 'badge-pending', label: 'Pendente' },
+        paid: { cls: 'badge-paid', label: 'Pago' },
+        completed: { cls: 'badge-completed', label: 'Concluído' },
+        canceled: { cls: 'badge-canceled', label: 'Cancelado' },
+        failed: { cls: 'badge-failed', label: 'Falhou' },
     };
     const s = map[status] || { cls: '', label: status };
     return `<span class="badge ${s.cls}">${s.label}</span>`;
@@ -311,8 +311,12 @@ function renderUsersTable(users) {
             <td><span class="badge ${user.is_active ? 'badge-active' : 'badge-inactive'}">${user.is_active ? 'Ativa' : 'Inativa'}</span></td>
             <td>
                 ${!isAdmin ? `<div class="action-btns">
-                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); openUserTransactions(${user.id}, '${user.name.replace(/'/g, "\\'")}')">📊 Transações</button>
-                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); openAdjustModal(${user.id}, '${user.name.replace(/'/g, "\\'")}')">💰 Saldo</button>
+                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); openUserTransactions(${user.id}, '${user.name.replace(/'/g, "\\'")}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Transações
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); openAdjustModal(${user.id}, '${user.name.replace(/'/g, "\\'")}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Saldo
+                    </button>
                 </div>` : '<span class="text-muted text-sm">—</span>'}
             </td>
         `;
@@ -393,9 +397,15 @@ async function loadResellers() {
                         </div>
                     </div>
                     <div class="reseller-actions">
-                        <button class="btn btn-ghost btn-sm" onclick="openUserTransactions(${user.id}, '${user.name.replace(/'/g, "\\'")}')">📊 Ver transações</button>
-                        <button class="btn btn-success btn-sm" onclick="approveResellerAction(${user.id}, '${user.name.replace(/'/g, "\\'")}')">✅ Aprovar</button>
-                        <button class="btn btn-danger btn-sm" onclick="rejectResellerAction(${user.id}, '${user.name.replace(/'/g, "\\'")}')">❌ Rejeitar</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openUserTransactions(${user.id}, '${user.name.replace(/'/g, "\\'")}')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Ver transações
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="approveResellerAction(${user.id}, '${user.name.replace(/'/g, "\\'")}')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Aprovar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectResellerAction(${user.id}, '${user.name.replace(/'/g, "\\'")}')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Rejeitar
+                        </button>
                     </div>
                 `;
                 list.appendChild(card);
@@ -497,13 +507,13 @@ async function loadLogs() {
 
 function renderLogActionBadge(action) {
     const map = {
-        order_confirm: { cls: 'badge-completed', label: '✅ Recarga confirmada' },
-        order_refund: { cls: 'badge-canceled', label: '↩️ Saldo devolvido' },
-        order_create: { cls: 'badge-pending', label: '📦 Pedido criado' },
-        balance_adjust: { cls: 'badge-paid', label: '💰 Ajuste de saldo' },
-        deposit_pix: { cls: 'badge-completed', label: '💳 Depósito PIX' },
-        reseller_approve: { cls: 'badge-active', label: '🏪 Revenda aprovada' },
-        reseller_reject: { cls: 'badge-inactive', label: '❌ Revenda rejeitada' },
+        order_confirm: { cls: 'badge-completed', label: 'Recarga confirmada' },
+        order_refund: { cls: 'badge-canceled', label: 'Saldo devolvido' },
+        order_create: { cls: 'badge-pending', label: 'Pedido criado' },
+        balance_adjust: { cls: 'badge-paid', label: 'Ajuste de saldo' },
+        deposit_pix: { cls: 'badge-completed', label: 'Depósito PIX' },
+        reseller_approve: { cls: 'badge-active', label: 'Revenda aprovada' },
+        reseller_reject: { cls: 'badge-inactive', label: 'Revenda rejeitada' },
     };
     const a = map[action] || { cls: '', label: action };
     return `<span class="badge ${a.cls}">${a.label}</span>`;
@@ -646,6 +656,13 @@ function openAdjustModal(userId, userName) {
     document.getElementById('adjust-amount').value = '';
     document.getElementById('adjust-type').value = 'credit';
     document.getElementById('adjust-reason').value = '';
+
+    // Show current balance from allUsers
+    const user = allUsers.find(u => u.id === userId);
+    const currentBalance = user ? (user.balance || 0) : 0;
+    const balanceEl = document.getElementById('adjust-current-balance');
+    if (balanceEl) balanceEl.textContent = formatCurrency(currentBalance);
+
     document.getElementById('adjust-balance-modal').classList.remove('hidden');
 }
 
@@ -675,6 +692,14 @@ async function submitAdjustBalance() {
     try {
         const result = await apiAdjustBalance(adjustState.userId, amount, txType, reason);
         showToast(`${result.message}. Novo saldo: ${formatCurrency(result.new_balance)}`, 'success');
+
+        // Update the user balance in allUsers so the table and modal stay in sync
+        const userIdx = allUsers.findIndex(u => u.id === adjustState.userId);
+        if (userIdx !== -1) {
+            allUsers[userIdx].balance = result.new_balance;
+            renderUsersTable(allUsers);
+        }
+
         closeAdjustModal();
 
         // Recarregar logs se estiver na seção

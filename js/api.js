@@ -151,3 +151,11 @@ async function apiRequestReseller() {
         method: 'POST',
     });
 }
+
+// ===== Cliente: Atualizar Perfil =====
+async function apiUpdateProfile(data) {
+    return apiRequest('/users/me', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    });
+}

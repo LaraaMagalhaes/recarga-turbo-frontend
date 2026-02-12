@@ -2,6 +2,53 @@
    ADMIN.CSS - Layout específico do dashboard admin
    ============================================================ */
 
+/* ===== SVG ICON SIZING ===== */
+.nav-svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.inline-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: -2px;
+    display: inline;
+    flex-shrink: 0;
+}
+
+.search-svg-icon {
+    position: absolute;
+    left: 14px;
+    pointer-events: none;
+    z-index: 1;
+    stroke: var(--text-muted);
+}
+
+/* ===== ADJUST BALANCE DISPLAY ===== */
+.adjust-balance-display {
+    background: rgba(72, 187, 120, 0.08);
+    border: 1px solid rgba(72, 187, 120, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.adjust-balance-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.adjust-balance-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #48bb78;
+}
+
 /* Override de overlay para sidebar mobile */
 .sidebar-overlay {
     position: fixed;
@@ -169,6 +216,7 @@
     font-size: 0.9rem;
     pointer-events: none;
     z-index: 1;
+    display: none;
 }
 
 .search-input {

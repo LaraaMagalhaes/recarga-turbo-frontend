@@ -1,8 +1,8 @@
 /**
  * dashboard.js — Lógica do Dashboard do Cliente
  * 
- * Sections: Nova Recarga, Histórico de Pedidos, Extrato de Depósitos, Minha Conta
- * Mobile-first: bottom nav, sidebar toggle
+ * Sections: Nova Recarga, Pedidos, Extrato, Minha Conta
+ * Mobile-first: bottom nav (no sidebar on mobile)
  * 
  * Depende de: api.js, auth.js (carregados antes desse script)
  */
@@ -86,8 +86,6 @@ function showSection(sectionId) {
         document.getElementById('page-subtitle').textContent = info.subtitle;
     }
 
-    closeSidebar();
-
     // Carregar dados sob demanda
     if (sectionId === 'pedidos') {
         DashboardState.ordersPage = 1;
@@ -101,25 +99,6 @@ function showSection(sectionId) {
 
 
 // =============================================================================
-// Sidebar (mobile)
-// =============================================================================
-
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
-    sidebar.classList.toggle('open');
-    backdrop.classList.toggle('show');
-}
-
-function closeSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebar-backdrop');
-    if (sidebar) sidebar.classList.remove('open');
-    if (backdrop) backdrop.classList.remove('show');
-}
-
-
-// =============================================================================
 // Perfil
 // =============================================================================
 
@@ -129,7 +108,7 @@ async function loadUserProfile() {
         DashboardState.user = profile;
         storeUser(profile);
 
-        // Sidebar
+        // Sidebar (desktop only)
         const nameEl = document.getElementById('sidebar-user-name');
         const avatarEl = document.getElementById('sidebar-user-avatar');
         const emailEl = document.getElementById('sidebar-user-email');
@@ -163,6 +142,17 @@ function updateProfileSection(profile) {
     if (emailEl) emailEl.textContent = profile.email || '—';
     if (avatarEl) avatarEl.textContent = getInitials(profile.name);
     if (badgeEl) badgeEl.textContent = translateRole(profile.role);
+
+    // Data section
+    const dataName = document.getElementById('profile-data-name');
+    const dataEmail = document.getElementById('profile-data-email');
+    const dataPhone = document.getElementById('profile-data-phone');
+    const dataAddress = document.getElementById('profile-data-address');
+
+    if (dataName) dataName.textContent = profile.name || '—';
+    if (dataEmail) dataEmail.textContent = profile.email || '—';
+    if (dataPhone) dataPhone.textContent = profile.phone ? formatPhone(profile.phone) : 'Não informado';
+    if (dataAddress) dataAddress.textContent = profile.address || 'Não informado';
 }
 
 
@@ -476,7 +466,7 @@ function renderTransactionItem(tx) {
 
 
 // =============================================================================
-// Depósito PIX (Modal — matching reference)
+// Depósito PIX (Modal)
 // =============================================================================
 
 function openDepositModal() {
@@ -498,7 +488,7 @@ function selectDepositAmount(amount) {
 
     // Highlight quick btn
     document.querySelectorAll('.deposit-quick-btn').forEach(btn => btn.classList.remove('selected'));
-    event.target.classList.add('selected');
+    if (event && event.target) event.target.classList.add('selected');
 
     // Update input
     const input = document.getElementById('deposit-amount-input');
@@ -508,7 +498,6 @@ function selectDepositAmount(amount) {
 }
 
 function onDepositAmountInput(input) {
-    // Allow commas and dots as decimal separator
     let raw = input.value.replace(/[^\d.,]/g, '').replace(',', '.');
     const value = parseFloat(raw);
 
@@ -557,12 +546,99 @@ async function confirmDeposit() {
         closeDepositModal();
 
         await loadWalletBalance();
-        // Reload extrato if visible
         if (document.getElementById('section-extrato')?.classList.contains('active')) {
             loadDepositHistory();
         }
     } catch (err) {
         showToast(err.message || 'Erro ao processar depósito', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+
+// =============================================================================
+// Editar Perfil (Modal funcional)
+// =============================================================================
+
+function openEditProfileModal() {
+    const profile = DashboardState.user;
+    if (!profile) {
+        showToast('Dados do perfil não carregados', 'error');
+        return;
+    }
+
+    // Preencher campos com dados atuais
+    const nameInput = document.getElementById('edit-name');
+    const emailInput = document.getElementById('edit-email');
+    const phoneInput = document.getElementById('edit-phone');
+    const addressInput = document.getElementById('edit-address');
+
+    if (nameInput) nameInput.value = profile.name || '';
+    if (emailInput) emailInput.value = profile.email || '';
+    if (phoneInput) phoneInput.value = profile.phone ? formatPhone(profile.phone) : '';
+    if (addressInput) addressInput.value = profile.address || '';
+
+    const modal = document.getElementById('modal-edit-profile');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeEditProfileModal() {
+    const modal = document.getElementById('modal-edit-profile');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function saveProfile() {
+    const nameInput = document.getElementById('edit-name');
+    const emailInput = document.getElementById('edit-email');
+    const phoneInput = document.getElementById('edit-phone');
+    const addressInput = document.getElementById('edit-address');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim() : '';
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const address = addressInput ? addressInput.value.trim() : '';
+
+    // Validação básica
+    if (!name || name.length < 2) {
+        showToast('Nome deve ter pelo menos 2 caracteres', 'error');
+        return;
+    }
+    if (!email || !email.includes('@')) {
+        showToast('Informe um e-mail válido', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-save-profile');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Salvando...';
+
+    try {
+        const payload = { name, email };
+        if (phone) payload.phone = phone;
+        if (address) payload.address = address;
+
+        const result = await apiUpdateProfile(payload);
+        showToast('Perfil atualizado com sucesso! ✅', 'success');
+
+        // Atualizar estado e UI
+        DashboardState.user = result;
+        storeUser(result);
+        updateProfileSection(result);
+
+        // Atualizar nome na sidebar e topbar
+        const sidebarName = document.getElementById('sidebar-user-name');
+        const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+        const topbarName = document.getElementById('topbar-user-name');
+        if (sidebarName) sidebarName.textContent = result.name;
+        if (sidebarAvatar) sidebarAvatar.textContent = getInitials(result.name);
+        if (topbarName) topbarName.textContent = result.name;
+
+        closeEditProfileModal();
+    } catch (err) {
+        showToast(err.message || 'Erro ao salvar perfil', 'error');
     } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -637,7 +713,7 @@ function escapeHtml(text) {
 }
 
 function formatPhone(phone) {
-    const digits = phone.replace(/\D/g, '');
+    const digits = String(phone).replace(/\D/g, '');
     if (digits.length === 11) {
         return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
     }

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recarga Turbo - Admin Dashboard</title>
     <meta name="description" content="Painel administrativo do sistema Recarga Turbo">
-    <link rel="stylesheet" href="css/global.css?v=2">
-    <link rel="stylesheet" href="css/components.css?v=2">
-    <link rel="stylesheet" href="css/pages/admin.css?v=2">
+    <link rel="stylesheet" href="css/global.css?v=3">
+    <link rel="stylesheet" href="css/components.css?v=3">
+    <link rel="stylesheet" href="css/pages/admin.css?v=3">
 </head>
 
 <body>
@@ -19,7 +19,12 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon">⚡</div>
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+            </div>
             <div>
                 <div class="logo-text">Recarga Turbo</div>
                 <div class="logo-sub">Administração</div>
@@ -29,23 +34,51 @@
         <nav class="sidebar-nav">
             <div class="nav-label">Menu</div>
             <div class="nav-item active" data-section="overview" onclick="navigateTo('overview')">
-                <span class="nav-icon">📊</span>
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                </svg>
                 <span>Visão Geral</span>
             </div>
             <div class="nav-item" data-section="orders" onclick="navigateTo('orders')">
-                <span class="nav-icon">📦</span>
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg>
                 <span>Pedidos</span>
             </div>
             <div class="nav-item" data-section="users" onclick="navigateTo('users')">
-                <span class="nav-icon">👥</span>
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
                 <span>Usuários</span>
             </div>
             <div class="nav-item" data-section="resellers" onclick="navigateTo('resellers')">
-                <span class="nav-icon">🏪</span>
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
                 <span>Parceiros</span>
             </div>
             <div class="nav-item" data-section="logs" onclick="navigateTo('logs')">
-                <span class="nav-icon">📋</span>
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
                 <span>Logs</span>
             </div>
         </nav>
@@ -59,7 +92,13 @@
                 </div>
             </div>
             <button class="btn btn-ghost btn-sm" style="width:100%; margin-top: 8px;" onclick="logout()">
-                🚪 Sair
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Sair
             </button>
         </div>
     </aside>
@@ -70,7 +109,14 @@
         <!-- Top Bar -->
         <div class="topbar">
             <div>
-                <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
                 <div id="topbar-title" class="page-title">Visão Geral</div>
                 <div id="topbar-subtitle" class="page-subtitle">Resumo do sistema</div>
             </div>
@@ -87,22 +133,50 @@
             <div id="section-overview" class="section active">
                 <div class="stats-grid">
                     <div class="stat-card purple animate-fade-in">
-                        <div class="stat-icon">👥</div>
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
                         <div class="stat-value" id="stat-total-users">—</div>
                         <div class="stat-label">Total de Usuários</div>
                     </div>
                     <div class="stat-card green animate-fade-in" style="animation-delay: 0.05s">
-                        <div class="stat-icon">✅</div>
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                        </div>
                         <div class="stat-value" id="stat-active-users">—</div>
                         <div class="stat-label">Contas Ativas</div>
                     </div>
                     <div class="stat-card blue animate-fade-in" style="animation-delay: 0.1s">
-                        <div class="stat-icon">📦</div>
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                                <line x1="12" y1="22.08" x2="12" y2="12" />
+                            </svg>
+                        </div>
                         <div class="stat-value" id="stat-pending-orders">—</div>
                         <div class="stat-label">Pedidos Pendentes</div>
                     </div>
                     <div class="stat-card orange animate-fade-in" style="animation-delay: 0.15s">
-                        <div class="stat-icon">🏪</div>
+                        <div class="stat-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </div>
                         <div class="stat-value" id="stat-reseller-requests">—</div>
                         <div class="stat-label">Solicitações Revenda</div>
                     </div>
@@ -111,8 +185,15 @@
                 <!-- Últimos Pedidos -->
                 <div class="card animate-fade-in" style="animation-delay: 0.2s">
                     <div class="card-header">
-                        <h3>📦 Últimos Pedidos</h3>
-                        <button class="btn btn-ghost btn-sm" onclick="navigateTo('orders')">Ver todos →</button>
+                        <h3>
+                            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            </svg>
+                            Últimos Pedidos
+                        </h3>
+                        <button class="btn btn-ghost btn-sm" onclick="navigateTo('orders')">Ver todos &#8594;</button>
                     </div>
                     <div class="card-body" id="overview-recent-orders">
                         <div class="loading-state">
@@ -129,7 +210,14 @@
             <div id="section-orders" class="section">
                 <div class="card">
                     <div class="card-header">
-                        <h3>📦 Pedidos de Recarga</h3>
+                        <h3>
+                            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            </svg>
+                            Pedidos de Recarga
+                        </h3>
                         <span class="text-sm text-muted" id="orders-count-label"></span>
                     </div>
 
@@ -138,11 +226,11 @@
                         <select id="orders-status-filter" class="filter-select"
                             onchange="onOrderStatusFilterChange(this.value)">
                             <option value="">Todos os status</option>
-                            <option value="pending">⏳ Pendente</option>
-                            <option value="paid">💳 Pago</option>
-                            <option value="completed">✅ Concluído</option>
-                            <option value="canceled">❌ Cancelado</option>
-                            <option value="failed">⚠️ Falhou</option>
+                            <option value="pending">Pendente</option>
+                            <option value="paid">Pago</option>
+                            <option value="completed">Concluído</option>
+                            <option value="canceled">Cancelado</option>
+                            <option value="failed">Falhou</option>
                         </select>
                     </div>
 
@@ -170,7 +258,13 @@
                             </table>
                         </div>
                         <div id="orders-empty" class="empty-state hidden">
-                            <div class="empty-icon">📦</div>
+                            <div class="empty-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                </svg>
+                            </div>
                             <h4>Nenhum pedido</h4>
                             <p>Não há pedidos com este filtro</p>
                         </div>
@@ -185,17 +279,31 @@
             <div id="section-users" class="section">
                 <div class="card">
                     <div class="card-header">
-                        <h3>👥 Todos os Usuários</h3>
+                        <h3>
+                            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                            Todos os Usuários
+                        </h3>
                         <span class="text-sm text-muted" id="users-count-label"></span>
                     </div>
 
                     <div class="search-bar">
                         <div class="search-input-wrapper">
-                            <span class="search-icon">🔍</span>
+                            <svg class="search-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
                             <input type="text" id="users-search" class="search-input"
                                 placeholder="Buscar por nome ou e-mail..." oninput="filterUsers(this.value)"
                                 autocomplete="off">
-                            <button id="search-clear-btn" class="search-clear hidden" onclick="clearSearch()">✕</button>
+                            <button id="search-clear-btn" class="search-clear hidden"
+                                onclick="clearSearch()">&times;</button>
                         </div>
                     </div>
 
@@ -220,7 +328,13 @@
                             </table>
                         </div>
                         <div id="users-no-results" class="empty-state hidden">
-                            <div class="empty-icon">🔍</div>
+                            <div class="empty-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
+                            </div>
                             <h4>Nenhum resultado</h4>
                             <p>Nenhum usuário encontrado com esse termo</p>
                         </div>
@@ -234,7 +348,14 @@
             <div id="section-resellers" class="section">
                 <div class="card">
                     <div class="card-header">
-                        <h3>🏪 Solicitações de Revenda</h3>
+                        <h3>
+                            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                            Solicitações de Revenda
+                        </h3>
                         <span class="text-sm text-muted" id="resellers-count-label"></span>
                     </div>
 
@@ -245,7 +366,13 @@
 
                     <div id="resellers-content" class="hidden">
                         <div id="resellers-empty" class="empty-state hidden">
-                            <div class="empty-icon">🎉</div>
+                            <div class="empty-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                            </div>
                             <h4>Nenhuma solicitação pendente</h4>
                             <p>Todas as solicitações foram processadas</p>
                         </div>
@@ -261,7 +388,16 @@
             <div id="section-logs" class="section">
                 <div class="card">
                     <div class="card-header">
-                        <h3>📋 Logs de Auditoria</h3>
+                        <h3>
+                            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg>
+                            Logs de Auditoria
+                        </h3>
                         <span class="text-sm text-muted" id="logs-count-label"></span>
                     </div>
 
@@ -269,13 +405,13 @@
                         <select id="logs-action-filter" class="filter-select"
                             onchange="onLogActionFilterChange(this.value)">
                             <option value="">Todas as ações</option>
-                            <option value="deposit_pix">💳 Depósito PIX</option>
-                            <option value="order_create">📦 Pedido criado</option>
-                            <option value="order_confirm">✅ Recarga confirmada</option>
-                            <option value="order_refund">↩️ Saldo devolvido</option>
-                            <option value="balance_adjust">💰 Ajuste de saldo</option>
-                            <option value="reseller_approve">🏪 Revenda aprovada</option>
-                            <option value="reseller_reject">❌ Revenda rejeitada</option>
+                            <option value="deposit_pix">Depósito PIX</option>
+                            <option value="order_create">Pedido criado</option>
+                            <option value="order_confirm">Recarga confirmada</option>
+                            <option value="order_refund">Saldo devolvido</option>
+                            <option value="balance_adjust">Ajuste de saldo</option>
+                            <option value="reseller_approve">Revenda aprovada</option>
+                            <option value="reseller_reject">Revenda rejeitada</option>
                         </select>
                     </div>
 
@@ -301,7 +437,13 @@
                             </table>
                         </div>
                         <div id="logs-empty" class="empty-state hidden">
-                            <div class="empty-icon">📋</div>
+                            <div class="empty-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                </svg>
+                            </div>
                             <h4>Nenhum log</h4>
                             <p>Nenhuma atividade registrada ainda</p>
                         </div>
@@ -317,8 +459,17 @@
     <div id="user-tx-modal" class="modal-overlay hidden">
         <div class="modal">
             <div class="modal-header">
-                <h3>📊 Transações de <span id="modal-user-name">—</span></h3>
-                <button class="modal-close" onclick="closeModal()">✕</button>
+                <h3>
+                    <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    Transações de <span id="modal-user-name">—</span>
+                </h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="user-detail-stats">
@@ -330,8 +481,8 @@
                 <div class="filters-bar mb-md">
                     <select id="modal-tx-filter" class="filter-select" onchange="onModalFilterChange(this.value)">
                         <option value="">Todos os tipos</option>
-                        <option value="credit">↑ Entradas</option>
-                        <option value="debit">↓ Saídas</option>
+                        <option value="credit">&#8593; Entradas</option>
+                        <option value="debit">&#8595; Saídas</option>
                     </select>
                 </div>
                 <div id="modal-tx-content">
@@ -351,11 +502,24 @@
     <div id="adjust-balance-modal" class="modal-overlay hidden">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>💰 Ajustar Saldo</h3>
-                <button class="modal-close" onclick="closeAdjustModal()">✕</button>
+                <h3>
+                    <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23" />
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    Ajustar Saldo
+                </h3>
+                <button class="modal-close" onclick="closeAdjustModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <p class="text-muted mb-md">Usuário: <strong id="adjust-user-name">—</strong></p>
+
+                <!-- Saldo atual do usuário -->
+                <div class="adjust-balance-display" id="adjust-balance-display">
+                    <div class="adjust-balance-label">SALDO ATUAL</div>
+                    <div class="adjust-balance-value" id="adjust-current-balance">R$ 0,00</div>
+                </div>
 
                 <div class="form-group">
                     <label for="adjust-amount">Valor (R$)</label>
@@ -366,8 +530,8 @@
                 <div class="form-group">
                     <label for="adjust-type">Tipo</label>
                     <select id="adjust-type" class="form-input">
-                        <option value="credit">↑ Crédito (adicionar)</option>
-                        <option value="debit">↓ Débito (remover)</option>
+                        <option value="credit">&#8593; Crédito (adicionar)</option>
+                        <option value="debit">&#8595; Débito (remover)</option>
                     </select>
                 </div>
 
@@ -390,7 +554,7 @@
         <div class="modal modal-sm">
             <div class="modal-header">
                 <h3 id="confirm-modal-title">Confirmar Ação</h3>
-                <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <p id="confirm-modal-message"></p>
@@ -402,10 +566,11 @@
         </div>
     </div>
 
-    <!-- Scripts (v2 = cache bust) -->
-    <script src="js/api.js?v=2"></script>
-    <script src="js/auth.js?v=2"></script>
-    <script src="js/pages/admin.js?v=2"></script>
+    <!-- Scripts (v3 = cache bust) -->
+    <script src="js/api.js?v=3"></script>
+    <script src="js/auth.js?v=3"></script>
+    <script src="js/pages/admin.js?v=3"></script>
+
 </body>
 
 </html>
