@@ -296,40 +296,69 @@
 /* Recharge Amounts */
 .recharge-amounts {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
 }
 
 .recharge-amount-btn {
-    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 10px 14px;
     border: 2px solid var(--border-light);
     border-radius: var(--radius-lg);
     background: var(--bg-card);
     cursor: pointer;
     transition: all var(--transition-fast);
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .recharge-amount-btn:hover {
     border-color: var(--color-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
 }
 
 .recharge-amount-btn.selected {
     border-color: var(--color-primary);
-    background: var(--gradient-primary);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 16px rgba(102, 126, 234, 0.2);
 }
 
-.recharge-amount-btn .amount-value {
-    font-size: 1.05rem;
-    font-weight: 700;
+.pkg-face-value {
+    font-size: 1.4rem;
+    font-weight: 800;
     color: var(--text-primary);
+    line-height: 1;
 }
 
-.recharge-amount-btn.selected .amount-value {
+.recharge-amount-btn.selected .pkg-face-value {
+    color: var(--color-primary);
+}
+
+.pkg-discount {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, #48bb78, #38a169);
     color: white;
+}
+
+.pkg-cost {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.recharge-amount-btn.selected .pkg-cost {
+    color: var(--color-primary);
 }
 
 /* Recharge Summary */
@@ -654,6 +683,7 @@
     justify-content: center;
     gap: 10px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
 }
 
 .deposit-quick-btn {
@@ -1214,7 +1244,7 @@
 /* ===== TABLET (≤1024px) ===== */
 @media (max-width: 1024px) {
     .recharge-amounts {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
 }
 
@@ -1288,16 +1318,16 @@
     }
 
     .recharge-amounts {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
         gap: 8px;
     }
 
     .recharge-amount-btn {
-        padding: 14px 4px;
+        padding: 16px 8px 12px;
     }
 
-    .recharge-amount-btn .amount-value {
-        font-size: 0.95rem;
+    .pkg-face-value {
+        font-size: 1.2rem;
     }
 
     .btn-recharge-submit {

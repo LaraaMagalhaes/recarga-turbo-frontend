@@ -71,6 +71,14 @@
                 </svg>
                 <span>Parceiros</span>
             </div>
+            <div class="nav-item" data-section="packages" onclick="navigateTo('packages')">
+                <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <span>Preços</span>
+            </div>
             <div class="nav-item" data-section="logs" onclick="navigateTo('logs')">
                 <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -448,6 +456,47 @@
                             <p>Nenhuma atividade registrada ainda</p>
                         </div>
                         <div id="logs-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
+            <!-- SECTION: Preços de Pacotes      -->
+            <!-- =============================== -->
+            <div id="section-packages" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>
+                            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23" />
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                            </svg>
+                            Gerenciar Preços de Recarga
+                        </h3>
+                        <span class="text-sm text-muted" id="packages-count-label"></span>
+                    </div>
+
+                    <div id="packages-loading" class="loading-state">
+                        <div class="spinner spinner-lg"></div>
+                        <span>Carregando pacotes...</span>
+                    </div>
+
+                    <div id="packages-content" class="hidden">
+                        <div id="packages-empty" class="empty-state hidden">
+                            <div class="empty-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="1" x2="12" y2="23" />
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg>
+                            </div>
+                            <h4>Nenhum pacote cadastrado</h4>
+                            <p>Os pacotes padrão serão criados automaticamente na primeira vez que um cliente acessar.
+                            </p>
+                        </div>
+
+                        <div id="packages-grid" class="packages-admin-grid"></div>
                     </div>
                 </div>
             </div>

@@ -25,6 +25,7 @@ const DashboardState = {
     // Recarga
     selectedOperator: null,
     selectedRechargeAmount: null,
+    selectedRechargeCost: null, // Novo: custo real
     // Depósito
     selectedDepositAmount: null,
 };
@@ -46,11 +47,11 @@ async function initDashboard() {
     await Promise.all([
         loadUserProfile(),
         loadWalletBalance(),
+        loadPackages(), // Carrega pacotes dinâmicos
     ]);
 
     showSection('inicio');
 }
-
 
 // =============================================================================
 // Navegação
@@ -184,8 +185,89 @@ async function loadWalletBalance() {
 
 
 // =============================================================================
+// Reseller CTA
+// =============================================================================
+
+function updateResellerCTA(profile) {
+    const container = document.getElementById('reseller-cta');
+    if (!container) return;
+
+    if (profile.role === 'reseller') {
+        container.innerHTML = `
+            <div class="cta-card cta-reseller-active">
+                <span class="cta-icon">🏪</span>
+                <div>
+                    <h4>Você é um Revendedor!</h4>
+                    <p>Aproveite preços exclusivos para revenda.</p>
+                </div>
+            </div>
+        `;
+    } else if (profile.reseller_requested) {
+        container.innerHTML = `
+            <div class="cta-card cta-reseller-pending">
+                <span class="cta-icon">⏳</span>
+                <div>
+                    <h4>Solicitação em Análise</h4>
+                    <p>Sua solicitação de revenda está sendo analisada.</p>
+                </div>
+            </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <div class="cta-card cta-reseller-invite" onclick="requestReseller()">
+                <span class="cta-icon">🏪</span>
+                <div>
+                    <h4>Seja um Revendedor!</h4>
+                    <p>Ganhe comissões revendendo recargas. Solicite agora!</p>
+                </div>
+                <button class="btn-cta">Solicitar</button>
+            </div>
+        `;
+    }
+}
+
+// =============================================================================
 // Recarga (Home) — Fluxo principal
 // =============================================================================
+
+async function loadPackages() {
+    const container = document.getElementById('packages-container');
+    if (!container) return;
+
+    try {
+        const packages = await apiGetPackages();
+        container.innerHTML = '';
+
+        if (packages.length === 0) {
+            container.innerHTML = '<p class="text-muted">Nenhum pacote disponível.</p>';
+            return;
+        }
+
+        packages.forEach(pkg => {
+            const faceValue = parseFloat(pkg.face_value);
+            const sellingPrice = parseFloat(pkg.selling_price);
+            const discount = faceValue > 0 ? Math.round((1 - sellingPrice / faceValue) * 100) : 0;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'recharge-amount-btn';
+            btn.dataset.amount = faceValue;
+            btn.dataset.cost = sellingPrice;
+            btn.onclick = () => selectRechargeAmount(faceValue, sellingPrice);
+
+            btn.innerHTML = `
+                <span class="pkg-face-value">R$ ${faceValue.toFixed(0)}</span>
+                ${discount > 0 ? '<span class="pkg-discount">' + discount + '% OFF</span>' : ''}
+                <span class="pkg-cost">Pague R$ ${sellingPrice.toFixed(2).replace('.', ',')}</span>
+            `;
+            container.appendChild(btn);
+        });
+
+    } catch (err) {
+        console.error('Erro ao carregar pacotes:', err);
+        container.innerHTML = '<p class="text-danger">Erro ao carregar ofertas.</p>';
+    }
+}
 
 function onPhoneInput(input) {
     let digits = input.value.replace(/\D/g, '');
@@ -211,16 +293,20 @@ function selectOperator(op) {
     updateRechargeSummary();
 }
 
-function selectRechargeAmount(amount) {
+function selectRechargeAmount(amount, cost) {
     DashboardState.selectedRechargeAmount = amount;
+    DashboardState.selectedRechargeCost = cost; // Armazena custo
+
     document.querySelectorAll('.recharge-amount-btn').forEach(btn => btn.classList.remove('selected'));
     const btn = document.querySelector(`.recharge-amount-btn[data-amount="${amount}"]`);
     if (btn) btn.classList.add('selected');
+
     updateRechargeSummary();
 }
 
 function updateRechargeSummary() {
     const amount = DashboardState.selectedRechargeAmount;
+    const cost = DashboardState.selectedRechargeCost;
     const operator = DashboardState.selectedOperator;
     const phoneInput = document.getElementById('recharge-phone');
     const phone = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
@@ -230,13 +316,18 @@ function updateRechargeSummary() {
 
     if (!summary) return;
 
-    if (amount && operator && phone.length >= 10) {
+    if (amount && cost !== null && operator && phone.length >= 10) {
         summary.classList.remove('hidden');
         document.getElementById('summary-phone').textContent = formatPhone(phone);
         document.getElementById('summary-operator').textContent = operator;
-        document.getElementById('summary-amount').textContent = formatCurrency(amount);
 
-        const afterBalance = DashboardState.balance - amount;
+        // Exibe: "R$ 10,00 (Receba R$ 20)"
+        document.getElementById('summary-amount').innerHTML = `
+            R$ ${formatCurrency(cost)} 
+            <small class="text-muted" style="font-weight:normal">(Receba R$ ${amount})</small>
+        `;
+
+        const afterBalance = DashboardState.balance - cost;
         const afterEl = document.getElementById('summary-balance-after');
         if (afterEl) {
             afterEl.textContent = formatCurrency(afterBalance);
@@ -255,6 +346,7 @@ async function submitRecharge() {
     const phone = phoneInput ? phoneInput.value.trim() : '';
     const operator = DashboardState.selectedOperator;
     const amount = DashboardState.selectedRechargeAmount;
+    const cost = DashboardState.selectedRechargeCost;
 
     if (!phone || phone.replace(/\D/g, '').length < 10) {
         showToast('Digite um número de telefone válido', 'error');
@@ -264,11 +356,11 @@ async function submitRecharge() {
         showToast('Selecione a operadora', 'error');
         return;
     }
-    if (!amount) {
+    if (!amount || !cost) {
         showToast('Selecione o valor da recarga', 'error');
         return;
     }
-    if (DashboardState.balance < amount) {
+    if (DashboardState.balance < cost) {
         showToast('Saldo insuficiente. Adicione crédito primeiro.', 'error');
         return;
     }
@@ -294,6 +386,7 @@ async function submitRecharge() {
 function resetRechargeForm() {
     DashboardState.selectedOperator = null;
     DashboardState.selectedRechargeAmount = null;
+    DashboardState.selectedRechargeCost = null;
     document.querySelectorAll('.operator-btn').forEach(btn => btn.classList.remove('selected'));
     document.querySelectorAll('.recharge-amount-btn').forEach(btn => btn.classList.remove('selected'));
     const phone = document.getElementById('recharge-phone');

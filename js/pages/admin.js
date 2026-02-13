@@ -59,6 +59,7 @@ function navigateTo(section) {
         orders: { title: 'Pedidos', subtitle: 'Gerenciamento de recargas' },
         users: { title: 'Usuários', subtitle: 'Gerenciamento de contas' },
         resellers: { title: 'Parceiros', subtitle: 'Aprovação de revendedores' },
+        packages: { title: 'Preços', subtitle: 'Gerenciar preços dos pacotes de recarga' },
         logs: { title: 'Logs', subtitle: 'Auditoria do sistema' },
     };
     const t = titles[section] || titles.overview;
@@ -69,6 +70,7 @@ function navigateTo(section) {
     if (section === 'orders') loadOrders();
     if (section === 'users') loadUsers();
     if (section === 'resellers') loadResellers();
+    if (section === 'packages') loadAdminPackages();
     if (section === 'logs') loadLogs();
 
     closeSidebar();
@@ -777,6 +779,196 @@ function renderPagination(containerId, current, totalPages, totalItems, goToFn) 
 
     container.innerHTML = html;
 }
+
+
+// =============================================================================
+// SEÇÃO: PREÇOS DE PACOTES
+// =============================================================================
+async function loadAdminPackages() {
+    const loading = document.getElementById('packages-loading');
+    const content = document.getElementById('packages-content');
+
+    loading.classList.remove('hidden');
+    content.classList.add('hidden');
+
+    try {
+        const packages = await apiGetAllPackagesAdmin();
+        const grid = document.getElementById('packages-grid');
+        const empty = document.getElementById('packages-empty');
+
+        document.getElementById('packages-count-label').textContent =
+            packages.length + ' pacote' + (packages.length !== 1 ? 's' : '');
+
+        if (packages.length === 0) {
+            empty.classList.remove('hidden');
+            grid.innerHTML = '';
+        } else {
+            empty.classList.add('hidden');
+            grid.innerHTML = '';
+            packages.forEach(pkg => {
+                grid.appendChild(renderPackageCard(pkg));
+            });
+        }
+
+        loading.classList.add('hidden');
+        content.classList.remove('hidden');
+    } catch (err) {
+        loading.classList.add('hidden');
+        showToast('Erro ao carregar pacotes: ' + err.message, 'error');
+    }
+}
+
+function renderPackageCard(pkg) {
+    const fv = parseFloat(pkg.face_value);
+    const sp = parseFloat(pkg.selling_price);
+    const discount = fv > 0 ? Math.round((1 - sp / fv) * 100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'pkg-admin-card' + (pkg.is_active ? '' : ' pkg-inactive');
+    card.id = 'pkg-card-' + pkg.id;
+
+    card.innerHTML = `
+        <div class="pkg-admin-header">
+            <div class="pkg-admin-face">R$ ${fv.toFixed(0)}</div>
+            ${discount > 0 ? '<span class="badge badge-completed">' + discount + '% OFF</span>' : ''}
+        </div>
+        <div class="pkg-admin-body">
+            <div class="pkg-admin-row-top">
+                <div>
+                    <label class="pkg-admin-label">Cliente recebe</label>
+                    <div class="pkg-admin-value">R$ ${fv.toFixed(2).replace('.', ',')}</div>
+                </div>
+                <label class="toggle-label">
+                    <input type="checkbox" id="pkg-active-${pkg.id}" ${pkg.is_active ? 'checked' : ''}
+                           onchange="togglePackageActive(${pkg.id}, this.checked)" />
+                    <span class="toggle-text">${pkg.is_active ? 'Ativo' : 'Inativo'}</span>
+                </label>
+            </div>
+            <label class="pkg-admin-label" style="margin-top: 14px">Cliente paga</label>
+            <div class="pkg-admin-input-row">
+                <span class="pkg-admin-prefix">R$</span>
+                <input type="number" class="form-input pkg-price-input" id="pkg-price-${pkg.id}"
+                       value="${sp.toFixed(2)}" step="0.01" min="0" />
+                <button class="btn btn-primary btn-sm" onclick="savePackagePrice(${pkg.id})">Salvar</button>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+async function savePackagePrice(pkgId) {
+    const input = document.getElementById('pkg-price-' + pkgId);
+    const price = parseFloat(input.value);
+
+    if (isNaN(price) || price < 0) {
+        showToast('Informe um preço válido', 'error');
+        return;
+    }
+
+    try {
+        await apiUpdatePackagePrice(pkgId, price);
+        showToast('Preço atualizado com sucesso!', 'success');
+        loadAdminPackages();
+    } catch (err) {
+        showToast('Erro ao salvar: ' + err.message, 'error');
+    }
+}
+
+async function togglePackageActive(pkgId, isActive) {
+    const input = document.getElementById('pkg-price-' + pkgId);
+    const currentPrice = parseFloat(input.value);
+
+    try {
+        await apiUpdatePackagePrice(pkgId, currentPrice, isActive);
+        showToast(isActive ? 'Pacote ativado' : 'Pacote desativado', 'success');
+        loadAdminPackages();
+    } catch (err) {
+        showToast('Erro: ' + err.message, 'error');
+    }
+}
+
+// Inject packages CSS
+(function injectPackagesCSS() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .packages-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            padding: 16px;
+        }
+        .pkg-admin-card {
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.03);
+            overflow: hidden;
+            transition: box-shadow .2s, opacity .2s;
+        }
+        .pkg-admin-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+        .pkg-admin-card.pkg-inactive { opacity: 0.5; }
+        .pkg-admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
+            color: #fff;
+        }
+        .pkg-admin-face {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .pkg-admin-body {
+            padding: 16px;
+        }
+        .pkg-admin-label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-text-muted);
+            margin-bottom: 4px;
+        }
+        .pkg-admin-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+        .pkg-admin-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pkg-admin-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .pkg-admin-prefix {
+            font-weight: 600;
+            color: var(--color-text-muted);
+        }
+        .pkg-price-input {
+            width: 100px;
+            text-align: right;
+        }
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+        .toggle-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-primary);
+        }
+    `;
+    document.head.appendChild(style);
+})();
 
 
 // =============================================================================

@@ -230,3 +230,21 @@ async function apiUpdateProfile(data) {
         body: JSON.stringify(data),
     });
 }
+// ===== Pacotes de Recarga (Descontos) =====
+async function apiGetPackages() {
+    return apiRequest('/packages/');
+}
+
+async function apiGetAllPackagesAdmin() {
+    return apiRequest('/packages/admin/all');
+}
+
+async function apiUpdatePackagePrice(packageId, sellingPrice, isActive) {
+    const payload = { selling_price: parseFloat(sellingPrice) };
+    if (isActive !== undefined) payload.is_active = isActive;
+
+    return apiRequest(`/packages/${packageId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+    });
+}
